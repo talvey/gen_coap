@@ -10,7 +10,7 @@
 % convenience functions for message construction
 -module(coap_message).
 
--export([request/2, request/3, request/4, ack/1, response/1, response/2, response/3]).
+-export([request/2, request/3, request/4, request/5, ack/1, response/1, response/2, response/3]).
 -export([set/3, set_payload/2, get_content/1, set_content/2, set_content/3]).
 
 -include("coap.hrl").
@@ -27,6 +27,11 @@ request(Type, Method, Content=#coap_content{}, Options) ->
     set_content(Content,
         #coap_message{type=Type, method=Method, options=Options}).
 
+request(Type, Method, Payload, Options, Token) when is_binary(Payload) ->
+  #coap_message{type=Type, method=Method, token=Token, payload=Payload, options=Options};
+request(Type, Method, Content=#coap_content{}, Options, Token) ->
+  set_content(Content,
+    #coap_message{type=Type, method=Method, token=Token, options=Options}).
 
 ack(Request=#coap_message{}) ->
     #coap_message{

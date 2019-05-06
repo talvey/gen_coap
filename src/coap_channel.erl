@@ -72,6 +72,11 @@ handle_cast(Request, State) ->
     io:fwrite("coap_channel unknown cast ~p~n", [Request]),
     {noreply, State}.
 
+transport_new_request(Message=#coap_message{token=Token}, Receiver, State=#state{tokens=Tokens}) ->
+    %Token = crypto:strong_rand_bytes(4), % shall be at least 32 random bits
+    Tokens2 = dict:store(Token, Receiver, Tokens),
+    transport_new_message(Message#coap_message{token=Token}, Receiver, State#state{tokens=Tokens2});
+
 transport_new_request(Message, Receiver, State=#state{tokens=Tokens}) ->
     Token = crypto:strong_rand_bytes(4), % shall be at least 32 random bits
     Tokens2 = dict:store(Token, Receiver, Tokens),
